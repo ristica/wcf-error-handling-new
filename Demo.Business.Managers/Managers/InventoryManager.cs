@@ -8,25 +8,19 @@ using Demo.Business.Contracts;
 using Demo.Business.Entities;
 using Demo.Data.Contracts;
 using System;
-using System.ServiceModel.Description;
 using System.Collections.ObjectModel;
 using System.ServiceModel.Channels;
-using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Description;
 
 namespace Demo.Business.Managers
 {
-    /// <summary>
-    /// do set initialization per call and not per session (default)
-    /// because it is not scalable
-    /// set concurency mode to multiple (default = single) because we have per call situation
-    /// set ReleaseServiceInstanceOnTransactionComplete to true if there will be at least 
-    /// one operation with attribute TransactionScopeRequired = true
-    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerCall, 
         ConcurrencyMode = ConcurrencyMode.Multiple, 
         ReleaseServiceInstanceOnTransactionComplete = false)]
-    public class InventoryManager : ManagerBase, IInventoryService, IErrorHandler, IServiceBehavior
+    //[ArgumentExceptionHandler] => no need for this here because it is handled in the host's config file
+    //[NotSupportedExceptionHandler] => no need for this here because it is handled in the host's config file
+    public class InventoryManager : ManagerBase, IInventoryService, IServiceBehavior
     {
         #region Fields
 
@@ -148,43 +142,14 @@ namespace Demo.Business.Managers
         [OperationBehavior(TransactionScopeRequired = true)]
         public void DeleteProduct(int productId)
         {
-            var ex = new ArgumentException($"Product with id: {productId} not found!");
-            throw new FaultException<ArgumentException>(ex, ex.Message);
+            throw new ArgumentException($"Product with id: {productId} not found!");
         }
 
         [TransactionFlow(TransactionFlowOption.Allowed)]
         [OperationBehavior(TransactionScopeRequired = true)]
         public void ActivateProduct(int productId)
         {
-            var ex = new NotImplementedException($"Product with id: {productId} not found!");
-            throw new FaultException<NotImplementedException>(ex, ex.Message);
-        }
-
-        #endregion
-
-        #region IErrorHandler implementation
-
-        public void ProvideFault(Exception error, MessageVersion version, ref Message fault)
-        {
-            if (error is ArgumentException)
-            {
-                var faultException = new FaultException<ArgumentException>(new ArgumentException(error.Message), error.Message);
-                fault = Message.CreateMessage(version, faultException.CreateMessageFault(), faultException.Action);
-            }
-            else if (error is NotImplementedException)
-            {
-                var faultException = new FaultException<NotImplementedException>(new NotImplementedException(error.Message), error.Message);
-                fault = Message.CreateMessage(version, faultException.CreateMessageFault(), faultException.Action);
-            }
-            else
-            {
-                fault = null;
-            }
-        }
-
-        public bool HandleError(Exception error)
-        {
-            return true;
+            throw new NotSupportedException($"Product with id: {productId} not found!");
         }
 
         #endregion
@@ -207,7 +172,7 @@ namespace Demo.Business.Managers
                 {
                     if (operationDescription.Name.Equals("DeleteProduct"))
                     {
-                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType.Equals(typeof(ArgumentException))) == null)
+                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType == typeof(ArgumentException)) == null)
                         {
                             throw new InvalidOperationException("DeleteProduct operation requires a fault contract for ArgumentException.");
                         }
@@ -215,9 +180,9 @@ namespace Demo.Business.Managers
 
                     if (operationDescription.Name.Equals("ActivateProduct"))
                     {
-                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType.Equals(typeof(NotImplementedException))) == null)
+                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType == typeof(NotSupportedException)) == null)
                         {
-                            throw new InvalidOperationException("ActivateProduct operation requires a fault contract for NotImplementedException.");
+                            throw new InvalidOperationException("ActivateProduct operation requires a fault contract for NotSupportedException.");
                         }
                     }
                 }

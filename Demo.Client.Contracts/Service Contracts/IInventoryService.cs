@@ -25,41 +25,13 @@ namespace Demo.Client.Contracts
         Product UpdateProduct(Product product);
 
         [OperationContract]
-        [FaultContract(typeof(NotFoundException))]
+        [FaultContract(typeof(ArgumentException))]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void DeleteProduct(int productId);
 
         [OperationContract]
-        [FaultContract(typeof(NotFoundException))]
+        [FaultContract(typeof(NotSupportedException))]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void ActivateProduct(int productId);
-
-        [OperationContract]
-        Product[] GetMostWanted(DateTime start, DateTime end);
-
-        #region Async
-
-        [OperationContract]
-        Task<Product[]> GetProductsAsync();
-
-        [OperationContract]
-        Task<Product[]> GetActiveProductsAsync();
-
-        [OperationContract]
-        Task<Product> GetProductByIdAsync(int id, bool acceptNullable = false);
-
-        [OperationContract]
-        Task<Product> UpdateProductAsync(Product product);
-
-        [OperationContract]
-        Task DeleteProductAsync(int productId);
-
-        [OperationContract]
-        Task ActivateProductAsync(int productId);
-
-        [OperationContract]
-        Task<Product[]> GetMostWantedAsync(DateTime start, DateTime end);
-
-        #endregion
     }
 }

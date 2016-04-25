@@ -72,6 +72,10 @@
       <Project>{f1d533f9-31fc-4c34-86a7-416161fb86c4}</Project>
       <Name>Core.Common.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core.Common.ServiceModel\Core.Common.ServiceModel.csproj">
+      <Project>{6117034d-6062-4257-9020-533ed9790f86}</Project>
+      <Name>Core.Common.ServiceModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core.Common\Core.Common.csproj">
       <Project>{8d236a26-8d80-44c5-ad20-97302af77ea0}</Project>
       <Name>Core.Common</Name>

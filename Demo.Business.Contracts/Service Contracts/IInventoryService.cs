@@ -28,7 +28,7 @@ namespace Demo.Business.Contracts
         void DeleteProduct(int productId);
 
         [OperationContract]
-        [FaultContract(typeof(NotImplementedException))]
+        [FaultContract(typeof(NotSupportedException))]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void ActivateProduct(int productId);
     }
