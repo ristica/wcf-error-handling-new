@@ -23,12 +23,12 @@ namespace Demo.Business.Contracts
         Product UpdateProduct(Product product);
 
         [OperationContract]
-        [FaultContract(typeof(NotFoundException))]
+        [FaultContract(typeof(ArgumentException))]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void DeleteProduct(int productId);
 
         [OperationContract]
-        [FaultContract(typeof(NotFoundException))]
+        [FaultContract(typeof(NotImplementedException))]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         void ActivateProduct(int productId);
     }

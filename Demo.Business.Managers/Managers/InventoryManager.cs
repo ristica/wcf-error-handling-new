@@ -7,6 +7,11 @@ using Demo.Business.Common;
 using Demo.Business.Contracts;
 using Demo.Business.Entities;
 using Demo.Data.Contracts;
+using System;
+using System.ServiceModel.Description;
+using System.Collections.ObjectModel;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Dispatcher;
 
 namespace Demo.Business.Managers
 {
@@ -21,8 +26,7 @@ namespace Demo.Business.Managers
         InstanceContextMode = InstanceContextMode.PerCall, 
         ConcurrencyMode = ConcurrencyMode.Multiple, 
         ReleaseServiceInstanceOnTransactionComplete = false)]
-    //[OperationReportServiceBehavior(true)]
-    public class InventoryManager : ManagerBase, IInventoryService
+    public class InventoryManager : ManagerBase, IInventoryService, IErrorHandler, IServiceBehavior
     {
         #region Fields
 
@@ -88,7 +92,6 @@ namespace Demo.Business.Managers
             });
         }
 
-        // [OperationReportOperationBehavior(true)]
         public Product[] GetActiveProducts()
         {
             return ExecuteFaultHandledOperation(() =>
@@ -100,7 +103,6 @@ namespace Demo.Business.Managers
             });
         }
 
-        // [OperationReportOperationBehavior(true)]
         public Product GetProductById(int id, bool acceptNullable = false)
         {
             return ExecuteFaultHandledOperation(() =>
@@ -123,12 +125,6 @@ namespace Demo.Business.Managers
             });
         }
 
-        /// <summary>
-        /// all commands should be transaction ready
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        // [OperationReportOperationBehavior(true)]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         [OperationBehavior(TransactionScopeRequired = true)]
         public Product UpdateProduct(Product product)
@@ -148,56 +144,94 @@ namespace Demo.Business.Managers
             });
         }
 
-        /// <summary>
-        /// all commands should be transaction ready
-        /// </summary>
-        /// <param name="productId"></param>
-        // [OperationReportOperationBehavior(true)]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         [OperationBehavior(TransactionScopeRequired = true)]
         public void DeleteProduct(int productId)
         {
-            ExecuteFaultHandledOperation(() =>
-            {
-                var productRepository = this._repositoryFactory.GetDataRepository<IProductRepository>();
-                var product = productRepository.GetProductById(productId);
-
-                if (product == null)
-                {
-                    var ex = new NotFoundException($"Product with id: {productId} not found!");
-                    throw new FaultException<NotFoundException>(ex, ex.Message);
-                }
-
-                product.IsActive = false;
-                var result = productRepository.UpdateProduct(product);
-            });
+            var ex = new ArgumentException($"Product with id: {productId} not found!");
+            throw new FaultException<ArgumentException>(ex, ex.Message);
         }
 
-        /// <summary>
-        /// all commands should be transaction ready
-        /// </summary>
-        /// <param name="productId"></param>
-        // [OperationReportOperationBehavior(true)]
         [TransactionFlow(TransactionFlowOption.Allowed)]
         [OperationBehavior(TransactionScopeRequired = true)]
         public void ActivateProduct(int productId)
         {
-            ExecuteFaultHandledOperation(() =>
-            {
-                var productRepository = this._repositoryFactory.GetDataRepository<IProductRepository>();
-                var product = productRepository.GetProductById(productId);
-
-                if (product == null)
-                {
-                    var ex = new NotFoundException($"Product with id: {productId} not found!");
-                    throw new FaultException<NotFoundException>(ex, ex.Message);
-                }
-
-                product.IsActive = true;
-                var result = productRepository.UpdateProduct(product);
-            });
+            var ex = new NotImplementedException($"Product with id: {productId} not found!");
+            throw new FaultException<NotImplementedException>(ex, ex.Message);
         }
 
-        #endregion        
+        #endregion
+
+        #region IErrorHandler implementation
+
+        public void ProvideFault(Exception error, MessageVersion version, ref Message fault)
+        {
+            if (error is ArgumentException)
+            {
+                var faultException = new FaultException<ArgumentException>(new ArgumentException(error.Message), error.Message);
+                fault = Message.CreateMessage(version, faultException.CreateMessageFault(), faultException.Action);
+            }
+            else if (error is NotImplementedException)
+            {
+                var faultException = new FaultException<NotImplementedException>(new NotImplementedException(error.Message), error.Message);
+                fault = Message.CreateMessage(version, faultException.CreateMessageFault(), faultException.Action);
+            }
+            else
+            {
+                fault = null;
+            }
+        }
+
+        public bool HandleError(Exception error)
+        {
+            return true;
+        }
+
+        #endregion
+
+        #region IServiceBehavior implementation
+
+        /// <summary>
+        ///  validate per service if the contract has attribute 
+        ///  with faultexception of T
+        /// </summary>
+        /// <param name="serviceDescription"></param>
+        /// <param name="serviceHostBase"></param>
+        public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        {
+            foreach (var enpoint in serviceDescription.Endpoints)
+            {
+                if (!enpoint.Contract.Name.Equals("IInventoryService")) continue;
+
+                foreach (var operationDescription in enpoint.Contract.Operations)
+                {
+                    if (operationDescription.Name.Equals("DeleteProduct"))
+                    {
+                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType.Equals(typeof(ArgumentException))) == null)
+                        {
+                            throw new InvalidOperationException("DeleteProduct operation requires a fault contract for ArgumentException.");
+                        }
+                    }
+
+                    if (operationDescription.Name.Equals("ActivateProduct"))
+                    {
+                        if (operationDescription.Faults.FirstOrDefault(item => item.DetailType.Equals(typeof(NotImplementedException))) == null)
+                        {
+                            throw new InvalidOperationException("ActivateProduct operation requires a fault contract for NotImplementedException.");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
+        {
+        }
+
+        public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        {
+        }
+
+        #endregion
     }
 }

@@ -7,7 +7,7 @@
                    xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Demo.Admin.Client"
         mc:Ignorable="d"
-                   Title="COntoso Online Shop"
+                   Title="Contoso Online Shop"
                    Height="479"
                    Width="836">
     <Window.Resources>

@@ -27,7 +27,7 @@ namespace Demo.Data.DataRepositories
                 ProductId = 2,
                 ArticleNumber = "vhjukjuh",
                 Description = "Test product 2",
-                IsActive = true,
+                IsActive = false,
                 Name = "Product 2",
                 Price = 200
             },
@@ -45,7 +45,7 @@ namespace Demo.Data.DataRepositories
                 ProductId = 4,
                 ArticleNumber = "25545",
                 Description = "Test product 4",
-                IsActive = true,
+                IsActive = false,
                 Name = "Product 4",
                 Price = 400
             }

@@ -25,12 +25,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Button Grid.Row="0"
-                    Content="Add new product"
-                    Command="{Binding AddProductCommand}" 
-                    Width="200"
-                    HorizontalAlignment="Left"
-                    Margin="0, 15"/>
             <Grid Grid.Row="1"
                   Visibility="{Binding Products, Converter={StaticResource modelToViz}}">
                 <Grid.ColumnDefinitions>
@@ -82,13 +76,6 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0"
                                         Orientation="Horizontal">
-                                <TextBlock>
-                                    <Hyperlink Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=core:UserControlViewBase}}"
-                                               CommandParameter="{Binding}">
-                                        <TextBlock Text="edit"
-                                                   FontSize="12" />
-                                    </Hyperlink>
-                                </TextBlock>
                                 <TextBlock Text="   " />
                                 <TextBlock Visibility="{Binding IsActive, Converter={StaticResource bool2VizConverter2}}">
                                     <Hyperlink Command="{Binding DataContext.DeactivateProductCommand, RelativeSource={RelativeSource AncestorType=core:UserControlViewBase}}"
@@ -123,13 +110,6 @@
             </ItemsControl>
         </Grid>
 
-        <dialogManager:ModalDialogManager DataContext="{Binding EditProductDialog}"
-                                          IsOpen="{Binding IsOpen}"
-                                          Title="{Binding Title}"
-                                          DialogHeight="340"
-                                          DialogWidth="720"
-                                          DialogResizeMode="NoResize"
-                                          CloseCommand="{Binding OkCommand}" />
         
     </Grid>    
     
