@@ -1,3 +1,3 @@
 # wcf
 
-erroro handling through implementation of the IErrorHandler interface (ProvideFault method)
+error handling through implementation of the IErrorHandler interface (ProvideFault method)
