@@ -14,8 +14,6 @@
         <TabControl Grid.Row="0">
             <TabItem Header="{Binding MaintainProductsViewModel.ViewTitle}"
                      Content="{Binding MaintainProductsViewModel}" />
-            <TabItem Header="{Binding MaintainOrdersViewModel.ViewTitle}"
-                     Content="{Binding MaintainOrdersViewModel}" />
         </TabControl>
 
     </Grid>

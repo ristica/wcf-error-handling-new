@@ -60,8 +60,5 @@
         <DataTemplate DataType="{x:Type vm:MaintainProductsViewModel}">
             <v:MaintainProductsView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:EditProductDialogViewModel}">
-            <v:EditProductDialog />
-        </DataTemplate>
     </Application.Resources>
 </Application>

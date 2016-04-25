@@ -22,23 +22,11 @@ namespace Demo.Admin.ViewModels
 
         private readonly IServiceFactory _serviceFactory;
         private ObservableCollection<Product> _products;
-        private EditProductDialogViewModel _editProductDialog;
         private Product _selectedProduct;
 
         #endregion
 
         #region Properties
-
-        public EditProductDialogViewModel EditProductDialog
-        {
-            get { return this._editProductDialog; }
-            set
-            {
-                if (this._editProductDialog == value) return;
-                this._editProductDialog = value;
-                OnPropertyChanged(() => this.EditProductDialog);
-            }
-        }
 
         public ObservableCollection<Product> Products
         {
@@ -72,8 +60,6 @@ namespace Demo.Admin.ViewModels
 
         #region Commands
 
-        public DelegateCommand<Product> EditProductCommand { get; private set; }
-        public DelegateCommand<object> AddProductCommand { get; private set; }
         public DelegateCommand<Product> DeactivateProductCommand { get; private set; }
         public DelegateCommand<Product> ActivateProductCommand { get; private set; }
 
@@ -129,8 +115,6 @@ namespace Demo.Admin.ViewModels
 
         private void RegisterCommands()
         {
-            this.EditProductCommand = new DelegateCommand<Product>(OnEditProductCommand);
-            this.AddProductCommand = new DelegateCommand<object>(OnAddProductCommand);
             this.DeactivateProductCommand = new DelegateCommand<Product>(OnDeactivateProductCommand);
             this.ActivateProductCommand = new DelegateCommand<Product>(OnActivateProductCommand);
         }
@@ -153,22 +137,6 @@ namespace Demo.Admin.ViewModels
         #endregion
 
         #region On...Command
-
-        private void OnEditProductCommand(Product product)
-        {
-            this.EditProductDialog = Container.GetExportedValue<EditProductDialogViewModel>();
-            this.EditProductDialog.Title = "Edit product...";
-            this.EditProductDialog.Model = product;
-            this.EditProductDialog.IsOpen = true;
-        }
-
-        private void OnAddProductCommand(object obj)
-        {
-            this.EditProductDialog = Container.GetExportedValue<EditProductDialogViewModel>();
-            this.EditProductDialog.Title = "Add product...";
-            this.EditProductDialog.Model = new Product();
-            this.EditProductDialog.IsOpen = true;
-        }
 
         private void OnDeactivateProductCommand(Product product)
         {

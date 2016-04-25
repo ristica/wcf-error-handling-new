@@ -90,9 +90,6 @@
     <Compile Include="Support\ModalDialogManager.cs" />
     <Compile Include="Support\ProductStatusConverter.cs" />
     <Compile Include="Support\ViewModelNullToVisibilityConverter.cs" />
-    <Compile Include="Views\EditProductDialog.xaml.cs">
-      <DependentUpon>EditProductDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MaintainProductsView.xaml.cs">
       <DependentUpon>MaintainProductsView.xaml</DependentUpon>
     </Compile>
@@ -111,10 +108,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\EditProductDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\MaintainProductsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

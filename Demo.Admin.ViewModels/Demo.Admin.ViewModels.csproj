@@ -64,7 +64,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ViewModels\EditProductDialogViewModel.cs" />
     <Compile Include="ViewModels\MaintainProductsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Messages\ProductChangedMessage.cs" />
